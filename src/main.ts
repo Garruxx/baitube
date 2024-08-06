@@ -5,7 +5,7 @@ import type { sendMessage } from './youtube/types/send-message.type'
 import { DownloadVideo } from './downloader/download-video'
 import { DownloadSong } from './downloader/donwload-song'
 import { rm } from 'fs/promises'
-useMultiFileAuthState('tokens/auth_main').then(({ state, saveCreds }) => {
+useMultiFileAuthState('tokens/garrux').then(({ state, saveCreds }) => {
 	const sock = makeWASocket({
 		printQRInTerminal: true,
 		auth: state,

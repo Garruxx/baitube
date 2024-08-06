@@ -16,7 +16,7 @@ export const GeneralSearch = async (
 
 	try {
 		reaction(sendMessage, from, key, '🔎')
-		const rawResult = await fetch('http://localhost:3000/graphql', {
+		const rawResult = await fetch('http://localhost:2222/graphql', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ query: generalSearchQuery(user_query) }),
