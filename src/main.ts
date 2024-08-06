@@ -5,7 +5,6 @@ import {
 	type WASocket,
 } from '@whiskeysockets/baileys'
 import { GeneralSearch } from './youtube/general'
-import type { sendMessage } from './youtube/types/send-message.type'
 import { DownloadVideo } from './downloader/download-video'
 import { DownloadSong } from './downloader/donwload-song'
 import { rm } from 'fs/promises'
@@ -14,10 +13,6 @@ useMultiFileAuthState('tokens/garrux-s').then(({ state, saveCreds }) => {
 		printQRInTerminal: true,
 		auth: state,
 	})
-
-	const sendMessage: sendMessage = async (...t) => {
-		return await sock.sendMessage(...t)
-	}
 
 	sock.logger.level = 'error'
 	sock.ev.on('creds.update', saveCreds)
@@ -34,8 +29,8 @@ useMultiFileAuthState('tokens/garrux-s').then(({ state, saveCreds }) => {
 		if (!from || !content) return
 
 		GeneralSearch({ content, from }, sock, key)
-		DownloadVideo({ content, from }, sendMessage, key, quoted!)
-		DownloadSong({ content, from }, sendMessage, key, quoted!)
+		DownloadVideo({ content, from }, sock, key, quoted!)
+		DownloadSong({ content, from }, sock, key, quoted!)
 	})
 })
 
