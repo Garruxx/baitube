@@ -10,7 +10,7 @@ export const GeneralSearch = async (
 ) => {
 	if (!content) return
 	const user_query = content.match(/YT(.*)YT/)?.[1]
-	if (!user_query || /descargar/.test(user_query)) return
+	if (!user_query || /descargar/i.test(user_query)) return
 
 	try {
 		reaction(sock, from, key, '🔎')
