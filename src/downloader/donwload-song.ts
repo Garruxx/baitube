@@ -29,7 +29,7 @@ export const DownloadSong = async (
 	await sendMessage(from, {
 		...fileType,
 		title: videoName,
-		mimetype: 'audio/mp4',
+		mimetype: 'audio/mp3',
 		fileName: `${artists} • ${videoName}.mp3`,
 		ptt: !!content.includes('audio'),
 	})
