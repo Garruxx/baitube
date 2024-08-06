@@ -14,24 +14,25 @@ export const DownloadSong = async (
 ) => {
 	if (!downloadSongRegex.test(content)) return
 	const { artists, videoID, videoName } = getVideoInfo(quoted)
+	const isAudio = content.includes('audio')
 	if (!videoID) return
 	reaction(sendMessage, from, key, '⏳')
 
 	const info = await getInfo(videoID)
 	const audioFormats = filterFormats(info.formats, 'audioandvideo')
-	const url = await downloadToMp3(audioFormats[0].url, videoID + '.mp3')
+	const url = isAudio
+		? audioFormats[0].url
+		: await downloadToMp3(audioFormats[0].url, videoID + '.mp3')
 
 	if (!url) return reaction(sendMessage, from, key, '😢')
 
-	const fileType = content.includes('audio')
-		? { audio: fs.readFileSync(url) }
-		: { document: { url } }
+	const fileType = isAudio ? { audio: { url } } : { document: { url } }
 	await sendMessage(from, {
 		...fileType,
 		title: videoName,
-		mimetype: 'audio/mp3',
+		mimetype: isAudio ? 'audio/mp4' : 'audio/mp3',
 		fileName: `${artists} • ${videoName}.mp3`,
-		ptt: !!content.includes('audio'),
+		ptt: isAudio,
 	})
 	reaction(sendMessage, from, key, '💿')
 }
