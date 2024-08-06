@@ -22,7 +22,7 @@ export const downloadToMp3 = async (
 			ffmpeg(filePath!)
 				.audioCodec('libmp3lame')
 				.format('mp3')
-				.audioBitrate('128k')
+				.audioQuality(2)
 				.on('end', () => {
 					unlink(filePath)
 					resolve(dest)
