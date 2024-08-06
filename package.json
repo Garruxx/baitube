@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "main": "src/main.ts",
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/fluent-ffmpeg": "^2.1.25"
+    "@types/fluent-ffmpeg": "^2.1.25",
+    "@types/node": "^22.1.0",
+    "esbuild-runner": "^2.2.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node-esbuild src/main.ts"
+    "start": "esr  src/main.ts"
   },
   "author": "",
   "license": "ISC",
