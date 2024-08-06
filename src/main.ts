@@ -1,12 +1,16 @@
 import { join } from 'path'
-import { useMultiFileAuthState, makeWASocket } from '@whiskeysockets/baileys'
+import {
+	useMultiFileAuthState,
+	makeWASocket,
+	type WASocket,
+} from '@whiskeysockets/baileys'
 import { GeneralSearch } from './youtube/general'
 import type { sendMessage } from './youtube/types/send-message.type'
 import { DownloadVideo } from './downloader/download-video'
 import { DownloadSong } from './downloader/donwload-song'
 import { rm } from 'fs/promises'
 useMultiFileAuthState('tokens/garrux-s').then(({ state, saveCreds }) => {
-	const sock = makeWASocket({
+	const sock: WASocket = makeWASocket({
 		printQRInTerminal: true,
 		auth: state,
 	})
@@ -29,7 +33,7 @@ useMultiFileAuthState('tokens/garrux-s').then(({ state, saveCreds }) => {
 		const from = messages?.[0]?.key?.remoteJid
 		if (!from || !content) return
 
-		GeneralSearch({ content, from }, sendMessage, key)
+		GeneralSearch({ content, from }, sock, key)
 		DownloadVideo({ content, from }, sendMessage, key, quoted!)
 		DownloadSong({ content, from }, sendMessage, key, quoted!)
 	})

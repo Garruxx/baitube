@@ -1,13 +1,12 @@
-import type { proto } from '@whiskeysockets/baileys'
-import type { sendMessage } from '../types/send-message.type'
+import type { proto, WASocket } from '@whiskeysockets/baileys'
 
 export const reaction = (
-	sendMessage: sendMessage,
+	sock: WASocket,
 	from: string,
 	key: proto.IMessageKey,
 	reaction: string
 ) => {
-	sendMessage(from, {
+	sock.sendMessage(from, {
 		react: {
 			key,
 			text: reaction,

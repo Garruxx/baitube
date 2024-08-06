@@ -1,13 +1,11 @@
-import ytdl from '@distube/ytdl-core'
 import { generalSearchQuery } from './queries/general.gql'
-import type { sendMessage } from './types/send-message.type'
 import { sendSongResult } from './utils/send-song'
 import { sendBestMatch } from './utils/send-best-result'
-import type { proto } from '@whiskeysockets/baileys'
+import type { proto, WASocket } from '@whiskeysockets/baileys'
 import { reaction } from './utils/reaction'
 export const GeneralSearch = async (
 	{ content, from }: { content: string; from: string },
-	sendMessage: sendMessage,
+	sock: WASocket,
 	key: proto.IMessageKey
 ) => {
 	if (!content) return
@@ -15,7 +13,8 @@ export const GeneralSearch = async (
 	if (!user_query || /descargar/.test(user_query)) return
 
 	try {
-		reaction(sendMessage, from, key, '🔎')
+		reaction(sock, from, key, '🔎')
+		sock.sendPresenceUpdate('composing', from)
 		const rawResult = await fetch('http://localhost:2222/graphql', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -26,15 +25,14 @@ export const GeneralSearch = async (
 		const songs = result?.tracks?.songs
 		let currentSend = songs?.length - 1
 		const resend = async () => {
-			await sendSongResult(songs[currentSend], from, sendMessage)
+			await sendSongResult(songs[currentSend], from, sock)
 			currentSend--
 			if (currentSend >= 0) await resend()
 		}
 
 		await resend()
-		await sendBestMatch(result?.bestMatch, from, sendMessage)
-		reaction(sendMessage, from, key, '⭐')
-
+		await sendBestMatch(result?.bestMatch, from, sock)
+		reaction(sock, from, key, '⭐')
 	} catch (error) {
 		console.log(error)
 	}
