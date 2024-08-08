@@ -5,23 +5,33 @@ import musicCardText from './music-card-text.txt'
 import musicCardTextAlt from './music-alternative-card.txt'
 import { getAverageColor } from '../utils/get-average-color'
 import { URLToB64AndBuffer } from '../utils/url-to-b64-and-buffer'
+import { shortStr } from '../../../downloader/utils/short-str'
 
-export const musicCard = async ({
-	id,
-	artists,
-	duration,
-	title,
-	watchId,
-}: Song) => {
+export const musicCard = async (
+	{ id, artists, duration, title, watchId }: Song,
+	makeATarget = false
+) => {
 	const songID = id || watchId
 	const artist = artists.map((a) => a.name).join(', ')
 	const imgURL = `https://i.ytimg.com/vi/${songID}/2.jpg`
+
+	if (!makeATarget) {
+		return {
+			image: null,
+			text: musicCardTextAlt
+				.replace('$title', title)
+				.replace('$id', songID)
+				.replace('$artist', artist)
+				.replace('$duration', duration),
+		}
+	}
+
 	try {
 		const [imgB64, buffer] = await URLToB64AndBuffer(imgURL)
 		const background = await getAverageColor(buffer)
 		const svgImage = musicTemplate
-			.replace('$artist', artist)
-			.replace('$title', title)
+			.replace('$artist', shortStr(artist))
+			.replace('$title', shortStr(title))
 			.replace('$duration', duration)
 			.replace('$image', imgB64)
 			.replace('$bg', background)
