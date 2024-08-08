@@ -1,0 +1,5 @@
+_*$title • $artist*_
+0:02 ─⚪──────────── $duration  
+Reacciona para descargar:
+*Audio 👍   Video ❤️   Canción 😮*
+https://youtu.be/$id

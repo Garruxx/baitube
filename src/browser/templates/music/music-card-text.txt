@@ -1,0 +1,2 @@
+*$title • $artist*
+https://youtu.be/$id
