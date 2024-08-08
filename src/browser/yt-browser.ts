@@ -1,0 +1,118 @@
+import { Whatsapp } from './../whatsapp/whatsapp'
+import type { Logger } from 'pino'
+import queryMusic from './graphql/general-music.gql'
+import { gqlRequest } from './utils/gql-request'
+import helpMessage from './assets/help-message.txt'
+import type { proto, WASocket } from '@whiskeysockets/baileys'
+import type { YTBrowserMessageSimplifier } from './types/yt-browser-message-simplifier.type'
+import type { YTBrowserMusicResults } from './types/yt-browser-music-results.type'
+import type { YTBrowserMusicTemplate } from './types/yt-browser-music-template.type'
+
+export class YTBrowser extends gqlRequest {
+	private queryRegex = /!yt (.*)/i
+	private infoRegex = /!!yt (-i|help|ayuda|info|-h)/
+	private conection: WASocket | null = null
+	private isMakeTargets = false
+	constructor(
+		graphqlURL: string,
+		private whatsapp: Whatsapp,
+		private messageSimplifier: YTBrowserMessageSimplifier,
+		private musicTemplate: YTBrowserMusicTemplate,
+		logger: Logger
+	) {
+		super(graphqlURL, logger)
+		whatsapp.onready = (conection) => {
+			conection.ev.on('messages.upsert', ({ messages }) => {
+				this.init(messages)
+				this.conection = conection
+			})
+		}
+	}
+
+	private async init([message]: proto.IWebMessageInfo[]) {
+		const { key, content, from, quoted } = this.messageSimplifier(message)
+		const text = this.getIsMakeATarget(quoted, content)
+		if (!text || !from || !key) return
+		const query = this.extractQueryFromMessage(text, from)
+		if (!query) return
+
+		try {
+			this.whatsapp.seenMessage({ key })
+			const results = await this.getMusic(query, key)
+			await this.sendResults(results, from)
+			await this.reaction(key, '📝')
+		} catch (error) {
+			await this.whatsapp.normalState(from)
+			await this.reaction(key, '😭')
+		}
+	}
+
+	private extractQueryFromMessage(
+		message: string = '',
+		from: string
+	): string {
+		if (this.infoRegex.test(message)) {
+			this.conection?.sendMessage(from, {
+				text: helpMessage,
+			})
+			return ''
+		}
+		const [query] = this.queryRegex.exec(message) || ['']
+		return query
+	}
+
+	async getMusic(
+		user_query: string,
+		key: proto.IMessageKey
+	): Promise<YTBrowserMusicResults | null> {
+		if (!user_query) return null
+		await this.whatsapp.writing(key.remoteJid!)
+		await this.reaction(key, '🔎')
+		const query = queryMusic.replace('$query', user_query)
+		return await this.gqlService<YTBrowserMusicResults>(query)
+	}
+
+	private async sendResults(
+		results: YTBrowserMusicResults | null,
+		from: string
+	) {
+		const bestMathc = results?.data.general.bestMatch
+		const songs = results?.data.general.tracks.songs || []
+		if (bestMathc && bestMathc.type == 'song') songs.push(bestMathc)
+
+		for (const song of songs) {
+			const { image, text } = await this.musicTemplate(
+				song,
+				this.isMakeTargets
+			)
+
+			if (!image) await this.conection?.sendMessage(from, { text })
+			else {
+				await this.conection?.sendMessage(from, {
+					image,
+					caption: text,
+				})
+			}
+		}
+	}
+
+	private async reaction(key: proto.IMessageKey, text: string) {
+		if (!key.remoteJid) return
+		return await this.conection?.sendMessage(key.remoteJid, {
+			react: { text, key },
+		})
+	}
+
+	private getIsMakeATarget(quoted?: string | null, content?: string | null) {
+		const text = quoted || content
+		if (!text) return false
+		if (!text.includes('-t')) {
+			this.isMakeTargets = false
+			return text
+		}
+		if (text.includes('-t')) {
+			this.isMakeTargets = true
+			return text.replace('-t', '')
+		}
+	}
+}
