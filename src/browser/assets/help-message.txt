@@ -1,0 +1,25 @@
+¡Hola! Aquí tienes una guía de como funciona el Bot 🤖
+Si quieres buscar una canción, inicia el mensaje con un signo de admiración
+y yt y acontinuacíon raliza la busqueda. Puedes buscar por letra o por titulo, o como prefieras,
+Aqui te dejo un ejemplo:
+
+!ｙt 22 Taylor Swift 
+
+Si agregas -t al final de una busqueda, tendrás una tarjetita con la info de la canción, 
+es una imagen autogenerada. Si lo usas ten cuidado, 
+no se te vaya a llenar el movil de fotos de tarjetas.
+Ejemplo: !ｙt 22 Taylor Swift -t 
+
+Descargar una canción:
+Descargar las canciones es lo más sencillo, solo reacciona al resultado que quieres.
+Si reaccionas con un pulgar arriba ( 👍 ), obtendrás un audio con la canción
+Si reaccionas con un corazón ( ❤ ), obtendrás el video
+Y si reaccionas con asombro ( 😮 ), obtendrás el archivo .mp3 de la canción
+La descarga de videos y audios es más rapida, al rededor de 4 segundos!
+La descarga de canción en archivo .mp3 toma algo más de tiempo, al rededor de 8 segundos 😭
+
+Por cierto, si ves la carita llorando o la carita triste 
+como reaccion en una busqueda o descarga, quiere decir que algo no salió bien,
+esperemos que no te salga! 
+
+_Por ultimo, este bot fue creado por Jhon Guerrero (Garrux) 👋🏻_ ~xr~
