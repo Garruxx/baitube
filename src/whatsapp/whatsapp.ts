@@ -1,9 +1,8 @@
 import * as Baileys from '@whiskeysockets/baileys'
-import { type Logger } from 'pino'
-
+import type { Logger } from '@whiskeysockets/baileys/node_modules/pino'
 export class Whatsapp {
 	private sessionName: string = 'tokens/default'
-	private conection: Baileys.WASocket | null = null
+	public conection: Baileys.WASocket | null = null
 	public conectionState: Partial<Baileys.ConnectionState> | null = null
 	private isEnd = false
 	private closedMessage = 'Whatsapp conection closed'
