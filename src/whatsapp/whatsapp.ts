@@ -6,7 +6,7 @@ export class Whatsapp {
 	public conectionState: Partial<Baileys.ConnectionState> | null = null
 	private isEnd = false
 	private closedMessage = 'Whatsapp conection closed'
-
+	private onReady: Array<(conection: Baileys.WASocket) => void> = []
 	constructor(
 		sessionName: string = 'default',
 		private baileys: typeof Baileys,
@@ -24,6 +24,11 @@ export class Whatsapp {
 		}
 	}
 
+	set onready(cb: (conection: Baileys.WASocket) => void) {
+		if (this.conectionState?.connection == 'open') cb(this.conection!)
+		this.onReady.push(cb)
+	}
+
 	async start(socketConfig: Baileys.UserFacingSocketConfig = {} as any) {
 		try {
 			const { saveCreds, state } = await this.getAuth()
@@ -38,10 +43,12 @@ export class Whatsapp {
 			this.conection.ev.on('creds.update', saveCreds)
 			this.conection.ev.on('connection.update', (state) => {
 				this.logger?.trace(state, 'Conection status')
-				this.logger?.info(state, 'Conection status')
-				this.logger?.error(new Error('sdds'), 'Conection status')
-				this.logger?.fatal(state, 'Conection status')
 				this.conectionState = state
+
+				if (state.connection == 'open') {
+					this.onReady.forEach((cb) => cb(this.conection!))
+				}
+
 				if (state.connection != 'close') return
 				if (this.isEnd) {
 					console.log(`\x1b[41m${this.closedMessage}\x1b[0m`)
@@ -58,9 +65,9 @@ export class Whatsapp {
 		this.conection?.end(undefined)
 	}
 
-	writing(id: string) {
+	async writing(id: string) {
 		try {
-			return this.conection?.sendPresenceUpdate('composing', id)
+			return await this.conection?.sendPresenceUpdate('composing', id)
 		} catch (error) {
 			this.logger?.error(error, 'Update precense to writing')
 		}
@@ -80,9 +87,9 @@ export class Whatsapp {
 		}
 	}
 
-	seenMessage({ key }: Baileys.proto.IWebMessageInfo) {
+	async seenMessage({ key }: Baileys.proto.IWebMessageInfo) {
 		try {
-			return this.conection?.readMessages([key])
+			return await this.conection?.readMessages([key])
 		} catch (error) {
 			this.logger?.error(error)
 		}
