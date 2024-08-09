@@ -29,8 +29,8 @@ export class YTBrowser extends gqlRequest {
 	}
 
 	private async init([message]: proto.IWebMessageInfo[]) {
-		const { key, content, from, quoted } = this.messageSimplifier(message)
-		const [text, makeTarget] = this.getIsMakeATarget(quoted, content)
+		const { key, content, from } = this.messageSimplifier(message)
+		const [text, makeTarget] = this.getIsMakeATarget(content)
 		if (!text || !from || !key) return
 		const query = this.extractQueryFromMessage(text, from)
 		if (!query) return
@@ -100,11 +100,8 @@ export class YTBrowser extends gqlRequest {
 		})
 	}
 
-	private getIsMakeATarget(
-		quoted?: string | null,
-		content?: string | null
-	): [string, boolean] {
-		const text = quoted || content
+	private getIsMakeATarget(content?: string | null): [string, boolean] {
+		const text = content
 		if (!text) return ['', false]
 		if (!text.includes('-t')) {
 			return [text, false]
