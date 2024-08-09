@@ -3,54 +3,41 @@ import type { Song } from '../../types/song.type'
 import musicTemplate from './music-card.svg'
 import musicCardText from './music-card-text.txt'
 import musicCardTextAlt from './music-alternative-card.txt'
-import { getAverageColor } from '../utils/get-average-color'
 import { URLToB64AndBuffer } from '../utils/url-to-b64-and-buffer'
-import { shortStr } from '../../../downloader/utils/short-str'
+import { shortStr } from '../../utils/short-str'
+import { setVarsToDoc } from '../../utils/set-vars-to-doc'
+import { getColorPallete } from '../utils/get-color-pallete'
+import { adjustImageLHURL } from '../../utils/adjust-img-url'
 
 export const musicCard = async (
-	{ id, artists, duration, title, watchId }: Song,
+	{ id, artists, duration, title, watchId, thumbnails }: Song,
 	makeATarget = false
 ) => {
-	const songID = id || watchId
-	const artist = artists.map((a) => a.name).join(', ')
-	const imgURL = `https://i.ytimg.com/vi/${songID}/2.jpg`
-
-	if (!makeATarget) {
-		return {
-			image: null,
-			text: musicCardTextAlt
-				.replace('$title', title)
-				.replace('$id', songID)
-				.replace('$artist', artist)
-				.replace('$duration', duration),
-		}
-	}
+	id ??= watchId
+	const imgURL = adjustImageLHURL(thumbnails[0].url)
+	let artist = artists.map((a) => a.name).join(', ') || 'Desconocido'
+	const docVars = { title, artist, duration, id }
+	const text = setVarsToDoc(musicCardTextAlt, docVars)
+	if (!makeATarget) return { text }
 
 	try {
 		const [imgB64, buffer] = await URLToB64AndBuffer(imgURL)
-		const background = await getAverageColor(buffer)
-		const svgImage = musicTemplate
-			.replace('$artist', shortStr(artist))
-			.replace('$title', shortStr(title))
-			.replace('$duration', duration)
-			.replace('$image', imgB64)
-			.replace('$bg', background)
-		const image = await sharp(Buffer.from(svgImage))
+		const pallete = await getColorPallete(buffer)
+		const targetVars = {
+			image: imgB64,
+			...pallete,
+			title: shortStr(title),
+			artist: shortStr(artist),
+			duration,
+		}
+		const svg = setVarsToDoc(musicTemplate, targetVars)
+		const text = setVarsToDoc(musicCardText, docVars)
+		const image = await sharp(Buffer.from(svg))
 			.resize(360, 150)
 			.png()
 			.toBuffer()
-		const text = musicCardText
-			.replace('$id', songID)
-			.replace('$artist', artist)
-			.replace('$title', title)
-
 		return { image, text }
 	} catch (error) {
-		const text = musicCardTextAlt
-			.replace('$title', title)
-			.replace('$id', songID)
-			.replace('$artist', artist)
-			.replace('$duration', duration)
-		return { image: null, text }
+		return { text }
 	}
 }
