@@ -1,50 +1,32 @@
-import pino from 'pino'
+import pino, {
+	type MultiStreamOptions,
+	type StreamEntry,
+	multistream,
+} from 'pino'
+import { writeStream } from './utils/write-stream'
 
-export const transport = pino.transport({
-	targets: [
-		{
-			target: 'pino-pretty',
-			level: 'info',
-			options: {
-				destination: 'logs/info.log',
-			},
-		},
-		{
-			target: 'pino-pretty',
-			level: 'error',
-			options: {
-				destination: 'logs/error.log',
-			},
-		},
-		{
-			target: 'pino-pretty',
-			level: 'faltal',
-			options: {
-				destination: 'logs/fatal.log',
-			},
-		},
-		{
-			target: 'pino-pretty',
-			level: 'warn',
-			options: {
-				destination: 'logs/warn.log',
-			},
-		},
-		{
-			target: 'pino-pretty',
-			level: 'debug',
-			options: {
-				destination: 'logs/debug.log',
-			},
-		},
-		{
-			target: 'pino-pretty',
-			level: 'trace',
-			options: {
-				destination: 'logs/trace.log',
-			},
-		},
-	],
-})
+const opts: MultiStreamOptions = {
+	levels: {
+		silent: Infinity,
+		fatal: 60,
+		error: 50,
+		warn: 40,
+		info: 30,
+		debug: 20,
+		trace: 10,
+	},
+	dedupe: true,
+}
+const stream: Array<StreamEntry<pino.Level>> = [
+	{ level: 'info', stream: writeStream('logs/info.log') },
+	{ level: 'debug', stream: writeStream('logs/debug.log') },
+	{ level: 'error', stream: writeStream('logs/error.log') },
+	{ level: 'fatal', stream: writeStream('logs/fatal.log') },
+	{ level: 'info', stream: writeStream('logs/info.log') },
+	{ level: 'trace', stream: writeStream('logs/trace.log') },
+	{ level: 'warn', stream: writeStream('logs/warn.log') },
+]
 
-export const logger = pino(transport)
+const logger = pino({}, multistream(stream, opts))
+
+export { logger }
