@@ -12,7 +12,6 @@ export class YTBrowser extends gqlRequest {
 	private queryRegex = /!yt (.*)/i
 	private infoRegex = /!!yt (-i|help|ayuda|info|-h)/
 	private conection: WASocket | null = null
-	private isMakeTargets = false
 	constructor(
 		graphqlURL: string,
 		private whatsapp: Whatsapp,
@@ -31,7 +30,7 @@ export class YTBrowser extends gqlRequest {
 
 	private async init([message]: proto.IWebMessageInfo[]) {
 		const { key, content, from, quoted } = this.messageSimplifier(message)
-		const text = this.getIsMakeATarget(quoted, content)
+		const [text, makeTarget] = this.getIsMakeATarget(quoted, content)
 		if (!text || !from || !key) return
 		const query = this.extractQueryFromMessage(text, from)
 		if (!query) return
@@ -39,7 +38,7 @@ export class YTBrowser extends gqlRequest {
 		try {
 			this.whatsapp.seenMessage({ key })
 			const results = await this.getMusic(query, key)
-			await this.sendResults(results, from)
+			await this.sendResults(results, from, makeTarget)
 			await this.reaction(key, '📝')
 		} catch (error) {
 			await this.whatsapp.normalState(from)
@@ -74,17 +73,15 @@ export class YTBrowser extends gqlRequest {
 
 	private async sendResults(
 		results: YTBrowserMusicResults | null,
-		from: string
+		from: string,
+		makeTarget: boolean = false
 	) {
 		const bestMathc = results?.data.general.bestMatch
 		const songs = results?.data.general.tracks.songs || []
 		if (bestMathc && bestMathc.type == 'song') songs.push(bestMathc)
 
 		for (const song of songs) {
-			const { image, text } = await this.musicTemplate(
-				song,
-				this.isMakeTargets
-			)
+			const { image, text } = await this.musicTemplate(song, makeTarget)
 
 			if (!image) await this.conection?.sendMessage(from, { text })
 			else {
@@ -103,16 +100,18 @@ export class YTBrowser extends gqlRequest {
 		})
 	}
 
-	private getIsMakeATarget(quoted?: string | null, content?: string | null) {
+	private getIsMakeATarget(
+		quoted?: string | null,
+		content?: string | null
+	): [string, boolean] {
 		const text = quoted || content
-		if (!text) return false
+		if (!text) return ['', false]
 		if (!text.includes('-t')) {
-			this.isMakeTargets = false
-			return text
+			return [text, false]
 		}
 		if (text.includes('-t')) {
-			this.isMakeTargets = true
-			return text.replace('-t', '')
+			return [text.replace('-t', ''), true]
 		}
+		return ['', false]
 	}
 }
