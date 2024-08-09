@@ -1,26 +1,14 @@
+import type { Song } from './song.type'
+
+interface BestMatch extends Song {
+	type: 'song' | 'album' | 'artist'
+}
 export interface YTBrowserMusicResults {
 	data: {
 		general: {
-			bestMatch: {
-				artists: Array<{
-					name: string
-				}>
-				duration: string
-				id: string
-				title: string
-				watchId: string
-				type: 'song' | 'album' | 'artist'
-			}
+			bestMatch: BestMatch
 			tracks: {
-				songs: Array<{
-					artists: Array<{
-						name: string
-					}>
-					duration: string
-					id: string
-					watchId: string
-					title: string
-				}>
+				songs: Array<Song>
 				continuation: {
 					params: string
 					query: string

@@ -4,6 +4,6 @@ export type YTBrowserMusicTemplate = (
 	song: Song,
 	makeATarget?: boolean
 ) => Promise<{
-	image: Buffer | null
+	image?: Buffer | null
 	text: string
 }>
