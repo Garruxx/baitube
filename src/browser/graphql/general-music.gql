@@ -6,6 +6,9 @@
 			id
 			type
 			duration
+			thumbnails {
+				url
+			}
 			artists {
 				name
 			}
@@ -17,6 +20,9 @@
 				duration
 				artists {
 					name
+				}
+				thumbnails {
+					url
 				}
 			}
 			continuation {
