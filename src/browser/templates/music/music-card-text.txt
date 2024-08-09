@@ -1,2 +1,4 @@
-*$title • $artist*
+_*$title • $artist*_
+Reacciona para descargar:
+*Audio 👍   Video ❤️   Canción 😂*
 https://youtu.be/$id
