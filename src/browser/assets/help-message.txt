@@ -14,7 +14,7 @@ Descargar una canción:
 Descargar las canciones es lo más sencillo, solo reacciona al resultado que quieres.
 Si reaccionas con un pulgar arriba ( 👍 ), obtendrás un audio con la canción
 Si reaccionas con un corazón ( ❤ ), obtendrás el video
-Y si reaccionas con asombro ( 😮 ), obtendrás el archivo .mp3 de la canción
+Y si reaccionas con me divierte ( 😂 ), obtendrás el archivo .mp3 de la canción
 La descarga de videos y audios es más rapida, al rededor de 4 segundos!
 La descarga de canción en archivo .mp3 toma algo más de tiempo, al rededor de 8 segundos 😭
 
