@@ -4,6 +4,7 @@
   "main": "src/main.ts",
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.25",
+    "@types/nedb": "^1.8.16",
     "@types/node": "^22.1.0",
     "esbuild": "^0.23.0",
     "esbuild-runner": "^2.2.2"
@@ -18,7 +19,6 @@
   "dependencies": {
     "@distube/ytdl-core": "^4.14.3",
     "@hapi/boom": "^10.0.1",
-    "@types/nedb": "^1.8.16",
     "@whiskeysockets/baileys": "^6.7.5",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
@@ -28,7 +28,6 @@
     "node-vibrant": "^3.0.0",
     "nodejs-file-downloader": "^4.13.0",
     "pino": "^9.3.2",
-    "pino-pretty": "^11.2.2",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.33.4"
   },
