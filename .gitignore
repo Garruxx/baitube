@@ -11,6 +11,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 tokens
 temp
+nedb
 # Caches
 
 .cache
