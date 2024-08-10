@@ -82,7 +82,7 @@ export class YTBrowser extends gqlRequest {
 		const songs = results?.data.general.tracks.songs || []
 		if (bestMathc && bestMathc.type == 'song') songs.push(bestMathc)
 
-		for (const song of songs) {
+		for (const song of songs.reverse()) {
 			const { image, text } = await this.musicTemplate(song, makeTarget)
 			let sent = null
 			if (!image) sent = await this.conection?.sendMessage(from, { text })
