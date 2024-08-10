@@ -101,7 +101,7 @@
         <clipPath id="clip0_241_120">
             <rect width="365" height="150" fill="white" />
         </clipPath>
-        <image id="image0_241_120" data-name="image.png" width="3" height="3"
+        <image id="image0_241_120" preserveAspectRatio="xMidYMid slice" data-name="image.png" width="3" height="3"
             xlink:href="$image" />
     </defs>
 </svg>
