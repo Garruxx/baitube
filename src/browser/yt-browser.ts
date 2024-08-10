@@ -7,6 +7,7 @@ import type { proto, WASocket } from '@whiskeysockets/baileys'
 import type { YTBrowserMessageSimplifier } from './types/yt-browser-message-simplifier.type'
 import type { YTBrowserMusicResults } from './types/yt-browser-music-results.type'
 import type { YTBrowserMusicTemplate } from './types/yt-browser-music-template.type'
+import type { Song } from './types/song.type'
 
 export class YTBrowser extends gqlRequest {
 	private queryRegex = /!yt (.*)/i
@@ -17,6 +18,7 @@ export class YTBrowser extends gqlRequest {
 		private whatsapp: Whatsapp,
 		private messageSimplifier: YTBrowserMessageSimplifier,
 		private musicTemplate: YTBrowserMusicTemplate,
+		private onSongMessage: (messageID: string, song: Song) => void,
 		logger: Logger
 	) {
 		super(graphqlURL, logger)
@@ -82,14 +84,15 @@ export class YTBrowser extends gqlRequest {
 
 		for (const song of songs) {
 			const { image, text } = await this.musicTemplate(song, makeTarget)
-
-			if (!image) await this.conection?.sendMessage(from, { text })
+			let sent = null
+			if (!image) sent = await this.conection?.sendMessage(from, { text })
 			else {
-				await this.conection?.sendMessage(from, {
+				sent = await this.conection?.sendMessage(from, {
 					image,
 					caption: text,
 				})
 			}
+			this.onSongMessage(sent?.key.id!, song)
 		}
 	}
 
