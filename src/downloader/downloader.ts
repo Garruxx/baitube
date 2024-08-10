@@ -37,21 +37,23 @@ export class Downloader extends LocalDB {
 		if (!/(👍|😂|❤️)/.test(react || '')) return
 		try {
 			const quoted = await this.findOneAsync<FileInfo>({ messageID })
-			if (!quoted) this.reaction(key, '🥹')
+			if (!quoted) return
 			else {
 				await this.reaction(key, '⏳')
 				const [format] = await this.getFormats(quoted.YTKey)
+				if (!format.url) return this.reaction(key, '🥹')
 				this.whatsapp.recordering(to)
 				react == '👍' && (await this.sendAudio(to, format.url, quoted))
 				react == '😂' && (await this.sendSong(to, format.url, quoted))
 				react == '❤️' && (await this.sendVideo(to, format.url, quoted))
 				this.reaction(key!, '📩')
+				this.whatsapp.normalState(to)
 			}
 		} catch (error) {
 			this.logger.error(error)
 			this.reaction(key!, '😭')
+			this.whatsapp.normalState(to)
 		}
-		this.whatsapp.normalState(to)
 	}
 
 	private async sendSong(to: string, url: string, fileInfo: FileInfo) {
