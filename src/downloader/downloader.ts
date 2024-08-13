@@ -67,7 +67,7 @@ export class Downloader extends LocalDB {
 		})
 	}
 	private async sendAudio(to: string, url: string, fileInfo: FileInfo) {
-		const fileName = fileInfo + '.mp3'
+		const fileName = fileInfo.title + '.mp3'
 		return await this.whatsapp.conection?.sendMessage(to, {
 			audio: { url },
 			title: fileInfo.title,
@@ -76,7 +76,7 @@ export class Downloader extends LocalDB {
 		})
 	}
 	private async sendVideo(to: string, url: string, fileInfo: FileInfo) {
-		const fileName = fileInfo + '.mp3'
+		const fileName = fileInfo.title + '.mp3'
 		return await this.whatsapp.conection?.sendMessage(to, {
 			video: { url },
 			title: fileInfo.title,
