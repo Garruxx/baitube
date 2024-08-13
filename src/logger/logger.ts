@@ -4,6 +4,7 @@ import pino, {
 	multistream,
 } from 'pino'
 import { writeStream } from './utils/write-stream'
+import { mkdir } from 'fs/promises'
 
 const opts: MultiStreamOptions = {
 	levels: {
@@ -28,5 +29,5 @@ const stream: Array<StreamEntry<pino.Level>> = [
 ]
 
 const logger = pino({}, multistream(stream, opts))
-
+mkdir('logs', { recursive: true }).catch(logger.error)
 export { logger }
