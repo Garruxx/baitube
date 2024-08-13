@@ -1,7 +1,7 @@
 import { Whatsapp } from './../whatsapp/whatsapp'
 import type { Logger } from 'pino'
 import queryMusic from './graphql/general-music.gql'
-import { gqlRequest } from './utils/gql-request'
+import { gqlRequest } from './graphql/gql-request'
 import helpMessage from './assets/help-message.txt'
 import type { proto, WASocket } from '@whiskeysockets/baileys'
 import type { YTBrowserMessageSimplifier } from './types/yt-browser-message-simplifier.type'
