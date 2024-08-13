@@ -73,6 +73,7 @@ export class Downloader extends LocalDB {
 			title: fileInfo.title,
 			mimetype: 'audio/mp4',
 			fileName,
+			caption: fileInfo.title,
 		})
 	}
 	private async sendVideo(to: string, url: string, fileInfo: FileInfo) {
@@ -82,6 +83,7 @@ export class Downloader extends LocalDB {
 			title: fileInfo.title,
 			mimetype: 'video/mp4',
 			fileName,
+			caption: fileInfo.title,
 		})
 	}
 
