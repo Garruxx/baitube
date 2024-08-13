@@ -7,6 +7,8 @@ import { YTBrowser } from './browser/yt-browser'
 import { messageSimplifier } from './utils/message-simplifier'
 import { musicCard } from './browser/templates/music/music-card'
 import { config } from 'dotenv'
+import { rm } from 'fs/promises'
+import { join } from 'path'
 config()
 if (!process.env.YT_KATZE_URL) throw new Error('env YT_KATZE_URL is required')
 
@@ -22,3 +24,10 @@ new YTBrowser(
 )
 
 whatsapp.start()
+
+setInterval(() => {
+	rm(join(process.cwd(), 'temp'), {
+		recursive: true,
+		retryDelay: 20000,
+	})
+}, 1000 * 60 * 60 * 22)
