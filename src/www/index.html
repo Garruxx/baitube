@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #128C7E;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            color: #075E54;
+            font-weight: bold;
+        }
+        /* QR code styling */
+        .qr-container {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp QR Code</h1>
+        <p>Scan this QR code with your WhatsApp to connect</p>
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+        <div class="status" id="status">Waiting for QR code...</div>
+        <div id="countdown" style="display: none; margin-top: 15px; color: #128C7E; font-size: 14px;"></div>
+        <button id="closeButton" style="margin-top: 20px; padding: 8px 20px; background-color: #128C7E; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Close</button>
+    </div>
+
+    <script>
+        // Function to close the window
+        document.getElementById('closeButton').addEventListener('click', function() {
+            // Try to close the window
+            window.close();
+            
+            // If closing fails (some browsers don't allow window.close()), 
+            // redirect to about:blank
+            setTimeout(function() {
+                window.location.href = 'about:blank';
+            }, 100);
+        });
+
+        // Function to refresh the page to check for QR updates
+        function refreshQR() {
+            fetch('/qr-data?' + new Date().getTime())
+                .then(response => response.text())
+                .then(qrData => {
+                    if (qrData) {
+                        document.getElementById('qrcode').innerHTML = qrData;
+                        document.getElementById('status').textContent = 'Scan this code with WhatsApp';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching QR:', err);
+                });
+        }
+
+        // Function to check connection status
+        function checkStatus() {
+            fetch('/connection-status?' + new Date().getTime())
+                .then(response => response.json())
+                .then(data => {
+                    if (data.connected) {
+                        document.getElementById('qrcode').innerHTML = '';
+                        document.getElementById('status').textContent = '¡Conectado!';
+                        document.getElementById('status').style.color = '#4CAF50';
+                        
+                        // Update the button's style
+                        const closeButton = document.getElementById('closeButton');
+                        closeButton.textContent = 'Close Window';
+                        closeButton.style.backgroundColor = '#4CAF50';
+                        
+                        clearInterval(qrInterval);
+                        clearInterval(statusInterval);
+                        
+                        // Show success message but keep checking the status for a moment
+                        document.getElementById('status').textContent = '¡Conexión establecida! Completando proceso...';
+                        
+                        // Wait a time before starting the countdown to close
+                        // to ensure that WhatsApp completes its authentication process
+                        setTimeout(() => {
+                            // Check once more that the connection is still established
+                            fetch('/connection-status?' + new Date().getTime())
+                                .then(response => response.json())
+                                .then(finalCheck => {
+                                    if (finalCheck.connected) {
+                                        document.getElementById('status').textContent = 'Connection complete!';
+
+                                        // Start countdown to close the window
+                                        const countdownEl = document.getElementById('countdown');
+                                        countdownEl.style.display = 'block';
+
+                                        let secondsLeft = 10; 
+                                        countdownEl.textContent = `This window will close in ${secondsLeft} seconds...`;
+                                        const countdownTimer = setInterval(() => {
+                                            secondsLeft--;
+                                            countdownEl.textContent = `This window will close in ${secondsLeft} seconds...`;
+                                            
+                                            
+                                            if (secondsLeft <= 0) {
+                                                clearInterval(countdownTimer);
+                                                window.close();
+                                                // Si falla el cierre, redirigir a about:blank
+                                                setTimeout(function() {
+                                                    window.location.href = 'about:blank';
+                                                }, 100);
+                                            }
+                                        }, 1000);
+                                    }
+                                });
+                        }, 3000);
+                        
+                    }
+                })
+                .catch(err => {
+                    console.error('Error checking status:', err);
+                });
+        }
+
+        // Initial fetch immediately
+        refreshQR();
+        checkStatus();
+        
+        // Set up more frequent refresh for better responsiveness
+        const qrInterval = setInterval(refreshQR, 1500); // Every 1.5 seconds
+        const statusInterval = setInterval(checkStatus, 1000); // Every 1 second
+    </script>
+</body>
+</html>

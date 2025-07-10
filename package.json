@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "main": "src/main.ts",
   "devDependencies": {
+    "@hapi/boom": "^10.0.1",
     "@types/fluent-ffmpeg": "^2.1.25",
     "@types/nedb": "^1.8.16",
     "@types/node": "^22.1.0",
+    "@types/open": "^6.2.1",
+    "@types/qrcode": "^1.5.5",
+    "@types/qrcode-terminal": "^0.12.2",
+    "@types/quantize": "^1.0.2",
     "esbuild": "^0.23.0",
     "esbuild-runner": "^2.2.2"
   },
@@ -18,9 +23,6 @@
   "description": "",
   "dependencies": {
     "@distube/ytdl-core": "^4.14.4",
-    "@hapi/boom": "^10.0.1",
-    "@types/qrcode-terminal": "^0.12.2",
-    "@types/quantize": "^1.0.2",
     "@whiskeysockets/baileys": "^6.7.5",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
@@ -28,7 +30,9 @@
     "link-preview-js": "^3.0.5",
     "nedb": "^1.8.0",
     "nodejs-file-downloader": "^4.13.0",
+    "open": "^10.1.2",
     "pino": "^9.3.2",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "quantize": "^1.0.2",
     "sharp": "^0.32.0"
