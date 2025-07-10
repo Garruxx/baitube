@@ -31,10 +31,11 @@ export class Downloader extends LocalDB {
 	private async init({ message }: proto.IWebMessageInfo) {
 		const react = message?.reactionMessage?.text
 		const key = message?.reactionMessage?.key
+		const likeRegexp = /👍|👍🏻|👍🏼|👍🏽|👍🏾|👍🏿/
 		const messageID = key?.id
 		const to = key?.remoteJid
 		if (!key || !to) return
-		if (!/(👍|😂|❤️)/.test(react || '')) return
+		if (!/(👍|👍🏻|👍🏼|👍🏽|👍🏾|👍🏿|😂|❤️)/.test(react || '')) return
 		try {
 			const quoted = await this.findOneAsync<FileInfo>({ messageID })
 			if (!quoted) return
@@ -43,7 +44,9 @@ export class Downloader extends LocalDB {
 				const [format] = await this.getFormats(quoted.YTKey)
 				if (!format.url) return this.reaction(key, '🥹')
 				this.whatsapp.recordering(to)
-				react == '👍' && (await this.sendAudio(to, format.url, quoted))
+				if (likeRegexp.test(react!)) {
+					await this.sendAudio(to, format.url, quoted)
+				}
 				react == '😂' && (await this.sendSong(to, format.url, quoted))
 				react == '❤️' && (await this.sendVideo(to, format.url, quoted))
 				this.reaction(key!, '📩')
@@ -61,7 +64,6 @@ export class Downloader extends LocalDB {
 		const path = await downloadToMp3(url, fileInfo.YTKey + '.mp3')
 		return await this.whatsapp.conection?.sendMessage(to, {
 			document: { url: path },
-			title: fileInfo.title,
 			mimetype: 'audio/mp3',
 			fileName,
 		})
@@ -70,7 +72,7 @@ export class Downloader extends LocalDB {
 		const fileName = fileInfo.title + '.mp3'
 		return await this.whatsapp.conection?.sendMessage(to, {
 			audio: { url },
-			title: fileInfo.title,
+			ptt: true,
 			mimetype: 'audio/mp4',
 			fileName,
 			caption: fileInfo.title,
@@ -80,7 +82,6 @@ export class Downloader extends LocalDB {
 		const fileName = fileInfo.title + '.mp3'
 		return await this.whatsapp.conection?.sendMessage(to, {
 			video: { url },
-			title: fileInfo.title,
 			mimetype: 'video/mp4',
 			fileName,
 			caption: fileInfo.title,
