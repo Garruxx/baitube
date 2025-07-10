@@ -1,5 +1,6 @@
 import * as Baileys from '@whiskeysockets/baileys'
 import type { Logger } from '@whiskeysockets/baileys/node_modules/pino'
+import qr from 'qrcode-terminal'
 export class Whatsapp {
 	private sessionName: string = 'tokens/default'
 	public conection: Baileys.WASocket | null = null
@@ -33,7 +34,8 @@ export class Whatsapp {
 		try {
 			const { saveCreds, state } = await this.getAuth()
 			this.conection = this.baileys.makeWASocket({
-				printQRInTerminal: true,
+				printQRInTerminal: false,
+				
 				browser: this.baileys.Browsers.macOS('Desktop'),
 				logger: this.logger,
 
@@ -44,6 +46,8 @@ export class Whatsapp {
 			this.conection.ev.on('connection.update', (state) => {
 				this.logger?.trace(state, 'Conection status')
 				this.conectionState = state
+				
+				if(state.qr) qr.generate(state.qr)
 
 				if (state.connection == 'open') {
 					this.onReady.forEach((cb) => cb(this.conection!))
