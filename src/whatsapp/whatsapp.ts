@@ -11,7 +11,6 @@ export class Whatsapp {
 	public conection: Baileys.WASocket | null = null
 	public conectionState: Partial<Baileys.ConnectionState> | null = null
 	private isEnd = false
-	private closedMessage = 'WhatsApp connection closed'
 	private onReady: Array<(conection: Baileys.WASocket) => void> = []
 	constructor(
 		sessionName: string = 'default',

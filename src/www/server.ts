@@ -67,6 +67,7 @@ export function startServer(port: number = 3000): void {
 		// Open browser automatically
 		try {
 			logger.info('Opening browser automatically...')
+			console.log(`\x1b[32mOpening browser at: ${url}\x1b[0m`)
 			await open(url)
 		} catch (err) {
             // Moradito 
